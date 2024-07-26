@@ -1,5 +1,6 @@
 const express = require("express");
 const Item = require("../models/item");
+const authenticate = require("../authenticate");
 
 const itemRouter = express.Router();
 
@@ -14,7 +15,7 @@ itemRouter
       })
       .catch((err) => next(err));
   })
-  .post((req, res, next) => {
+  .post(authenticate.verifyUser, (req, res, next) => {
     Item.create(req.body)
       .then((item) => {
         console.log("Item Created ", item);
@@ -24,11 +25,11 @@ itemRouter
       })
       .catch((err) => next(err));
   })
-  .put((req, res) => {
+  .put(authenticate.verifyUser, (req, res) => {
     res.statusCode = 403;
     res.end("PUT operation not supported on /items");
   })
-  .delete((req, res, next) => {
+  .delete(authenticate.verifyUser, (req, res, next) => {
     Item.deleteMany()
       .then((response) => {
         res.statusCOde = 200;
@@ -49,11 +50,11 @@ itemRouter
       })
       .catch((err) => next(err));
   })
-  .post((req, res) => {
+  .post(authenticate.verifyUser, (req, res) => {
     res.statusCode = 403;
     res.end(`POST operation not supported on /items/${req.params.itemId}`);
   })
-  .put((req, res, next) => {
+  .put(authenticate.verifyUser, (req, res, next) => {
     Item.findByIdAndUpdate(
       req.params.itemId,
       {
@@ -68,7 +69,7 @@ itemRouter
       })
       .catch((err) => next(err));
   })
-  .delete((req, res, next) => {
+  .delete(authenticate.verifyUser, (req, res, next) => {
     Item.findByIdAndDelete(req.params.itemId)
       .then((response) => {
         res.statusCode = 200;
